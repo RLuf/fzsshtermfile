@@ -1,0 +1,41 @@
+{
+	"name": "fztermfile",
+	"version": "1.1.0",
+	"description": "Hybrid local + remote (SSH) terminal panel for Obsidian using xterm.js, node-pty and ssh2.",
+	"main": "main.js",
+	"type": "module",
+	"author": "Roger Luft <roger@webstorage.com.br>",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"
+	},
+	"keywords": [
+		"obsidian",
+		"terminal",
+		"xterm",
+		"pty",
+		"ssh",
+		"wsl",
+		"sftp"
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^22.0.0",
+		"@types/ssh2": "^1.15.1",
+		"esbuild": "^0.25.5",
+		"obsidian": "latest",
+		"tslib": "2.4.0",
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"@xterm/addon-fit": "^0.10.0",
+		"@xterm/addon-search": "^0.16.0",
+		"@xterm/addon-serialize": "^0.13.0",
+		"@xterm/addon-web-links": "^0.11.0",
+		"@xterm/xterm": "^5.5.0",
+		"ssh2": "^1.16.0"
+	},
+	"optionalDependencies": {
+		"@homebridge/node-pty-prebuilt-multiarch": "^0.13.1"
+	}
+}

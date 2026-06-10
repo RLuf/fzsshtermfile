@@ -1,0 +1,23 @@
+# build / deps
+node_modules/
+main.js
+*.js.map
+
+# obsidian plugin local data
+data.json
+
+# test artifacts
+test/*.cjs
+
+# local backups (vault config snapshots)
+backups/
+
+# stale local release artifacts (releases are built by CI)
+release/
+
+# claude code / local dev notes
+CLAUDE.md
+.claude/
+
+# os
+.DS_Store
