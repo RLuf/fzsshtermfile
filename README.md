@@ -52,20 +52,16 @@ A terminal can run **interactive full-screen programs** (vim, htop, **Claude Cod
 
 ### Working around it: enable a real PTY (recommended for Claude Code)
 
-If you want the full TUI / Claude Code experience:
+The simplest option is **`@lydell/node-pty`**, whose prebuilt binaries are **N-API** — ABI-stable across Electron versions, so they load on Obsidian's current Electron **without any rebuild or C++ toolchain**. To enable the full TUI / Claude Code experience:
 
 1. Open *Settings → fzTermFile → Native local terminal (node-pty)* and click **Copy install command** (and **Open plugin folder**). The command is, in effect:
    ```bash
-   npm install --prefix "<vault>/.obsidian/plugins/fztermfile" @homebridge/node-pty-prebuilt-multiarch
+   npm install --prefix "<vault>/.obsidian/plugins/fztermfile" @lydell/node-pty
    ```
-2. Run it in a **real terminal** (PowerShell/bash) on the machine.
-3. If your Obsidian's Electron is newer than the package's prebuilds (likely on the latest Obsidian), rebuild it against Obsidian's Electron once:
-   ```bash
-   cd "<vault>/.obsidian/plugins/fztermfile"
-   npx @electron/rebuild -v <obsidian-electron-version> -f -w node-pty-prebuilt-multiarch
-   ```
-   You can read Obsidian's Electron version from *Help → About*. Alternatives that ship prebuilds: `@lydell/node-pty`, `node-pty` (official, needs `@electron/rebuild`).
-4. **Reopen Obsidian.** fzTermFile auto-detects the module and switches local terminals to the real PTY (the settings status will say *Detected*).
+2. Run it in a **real terminal** (PowerShell/bash) on the machine. It downloads only your platform's prebuilt (e.g. `@lydell/node-pty-win32-x64`, which bundles ConPTY/OpenConsole on Windows).
+3. **Reopen Obsidian.** fzTermFile auto-detects the module and switches local terminals to the real PTY (the settings status will say *Detected*).
+
+If `@lydell/node-pty` ever lacks a prebuild for your platform/arch, alternatives are `node-pty` (official, needs `npx @electron/rebuild -v <obsidian-electron-version>` and a C++ toolchain) or `@homebridge/node-pty-prebuilt-multiarch`. Read Obsidian's Electron version from *Help → About*.
 
 Until then, **compatibility mode** is used automatically — and it already fixes the classic "Backspace doesn't work in pwsh.exe" problem by doing the line editing on the front end. Its only limitation is full-screen TUIs.
 

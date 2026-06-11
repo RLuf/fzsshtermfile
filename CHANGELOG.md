@@ -60,7 +60,10 @@ every Electron bump, and the store ships JS only (no binaries). Like the popular
 `terminal` plugin (which asks the user to install a Python helper rather than
 bundling one), fzTermFile keeps the native PTY as an **opt-in, user-installed**
 dependency and never downloads code at runtime. The compatibility fallback covers
-ordinary command-line use, including the Backspace fix.
+ordinary command-line use, including the Backspace fix. Recommended package:
+**`@lydell/node-pty`** (N-API prebuilds — loads on current Electron with no
+rebuild); the runtime loader also accepts `node-pty`,
+`@homebridge/node-pty-prebuilt-multiarch`, and `node-pty-prebuilt-multiarch`.
 
 ## [1.0.0] - 2026
 - Initial version: hybrid local + SSH terminal with xterm.js, SFTP file browser,

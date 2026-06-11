@@ -8,9 +8,11 @@
 // and merely DETECTS a user-installed node-pty to enable the high-fidelity PTY.
 // See the README for manual install instructions.
 
-// Recommended package to vendor for a real PTY (prebuilds for Electron). The
-// user may also use @lydell/node-pty, node-pty, or node-pty-prebuilt-multiarch.
-const RECOMMENDED_PACKAGE = "@homebridge/node-pty-prebuilt-multiarch";
+// Recommended package to vendor for a real PTY. @lydell/node-pty ships N-API
+// prebuilds, which are ABI-stable across Electron versions — so it loads on
+// Obsidian's Electron without any @electron/rebuild or C++ toolchain. The user
+// may also use node-pty, @homebridge/node-pty-prebuilt-multiarch, etc.
+const RECOMMENDED_PACKAGE = "@lydell/node-pty";
 
 // Packages the runtime loader (pty-backend) knows how to require.
 const SUPPORTED_PACKAGES = [
