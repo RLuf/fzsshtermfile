@@ -19,7 +19,7 @@ import { SshBackend } from "./ssh-backend";
 import { BinaryManager } from "./binary-manager";
 import { setLanguage, t, Lang } from "./i18n";
 
-// Main fzTermFile plugin. Registers the terminal view, ribbon, commands and the
+// Main fzSSHTermFile plugin. Registers the terminal view, ribbon, commands and the
 // settings tab, and exposes the API used by views/modals.
 export default class FzTermFilePlugin extends Plugin {
 	settings: FzSettings = DEFAULT_SETTINGS;

@@ -1,5 +1,5 @@
 {
-	"name": "fztermfile",
+	"name": "fzsshtermfile",
 	"version": "1.1.0",
 	"description": "Hybrid local + remote (SSH) terminal panel for Obsidian using xterm.js, node-pty and ssh2.",
 	"main": "main.js",

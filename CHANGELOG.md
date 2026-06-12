@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to fzTermFile are documented here. This project follows
+All notable changes to fzSSHTermFile are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
 ## [1.1.0] - 2026-06-10
@@ -57,7 +57,7 @@ Full-screen TUIs and **Claude Code**'s interactive UI need a real PTY. Two
 obstacles: (1) node-pty is native and must match Obsidian's Electron (32 → 34 →
 **39**), and the store ships JS only; (2) even with a correct binary, node-pty's
 ConPTY backend needs a **Worker thread**, which the Obsidian **renderer forbids**
-(`Failed to construct 'Worker'`). fzTermFile solves this with a **PTY host**: it
+(`Failed to construct 'Worker'`). fzSSHTermFile solves this with a **PTY host**: it
 spawns the user's **Node.js** running the plugin's own host code (passed
 in-memory via `node -e` — nothing written to disk, nothing downloaded), which
 runs node-pty in that separate process and proxies the terminal over stdio. This

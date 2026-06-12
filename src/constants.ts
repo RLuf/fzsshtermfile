@@ -1,4 +1,4 @@
-// Shared identifiers and constants for fzTermFile.
+// Shared identifiers and constants for fzSSHTermFile.
 
 // View (leaf) type used by the terminal panel in the Obsidian workspace.
 export const FZ_TERMINAL_VIEW_TYPE = "fztermfile-terminal-view";
@@ -8,7 +8,7 @@ export const FZ_TERMINAL_VIEW_TYPE = "fztermfile-terminal-view";
 export const FZ_TERMINAL_ICON = "terminal-square";
 
 // Friendly name shown in the tab when no profile is set yet.
-export const FZ_DEFAULT_TITLE = "fzTermFile";
+export const FZ_DEFAULT_TITLE = "fzSSHTermFile";
 
 // Stable id of the auto-created "quick local terminal" profile. Matching by id
 // (instead of by localized display name) keeps a single quick profile even if

@@ -1,6 +1,6 @@
 {
-	"id": "fztermfile",
-	"name": "fzTermFile",
+	"id": "fzsshtermfile",
+	"name": "fzSSHTermFile",
 	"version": "1.1.0",
 	"minAppVersion": "1.7.2",
 	"description": "Hybrid terminal for Obsidian: a local shell (WSL on Windows, native on Linux/macOS) and remote SSH profiles rendered with xterm.js. Manage profiles, browse local and remote files over SFTP, and run Claude Code from inside Obsidian.",

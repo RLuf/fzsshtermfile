@@ -1,4 +1,4 @@
-// Minimal internationalization layer for fzTermFile.
+// Minimal internationalization layer for fzSSHTermFile.
 //
 // The community store expects English UI text by default; here we ship English
 // as the base language and Portuguese (Brazil) as an optional translation the

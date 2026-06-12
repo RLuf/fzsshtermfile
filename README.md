@@ -1,4 +1,4 @@
-# fzTermFile
+# fzSSHTermFile
 
 A **hybrid terminal** for Obsidian: a **local shell** (WSL on Windows, native shell on Linux/macOS) and **remote SSH** sessions, rendered with **xterm.js**. Manage and favorite terminal profiles, browse **local and remote files over SFTP**, and run **Claude Code** from inside Obsidian.
 
@@ -32,34 +32,34 @@ A **hybrid terminal** for Obsidian: a **local shell** (WSL on Windows, native sh
 ## Install
 
 ### From the community store (when published)
-Search for **fzTermFile** in *Settings → Community plugins* and install. SSH works immediately; the local terminal runs in compatibility mode until you optionally enable the native PTY.
+Search for **fzSSHTermFile** in *Settings → Community plugins* and install. SSH works immediately; the local terminal runs in compatibility mode until you optionally enable the native PTY.
 
 ### Manually / via BRAT
-1. Copy `main.js`, `manifest.json` and `styles.css` into `<vault>/.obsidian/plugins/fztermfile/`.
+1. Copy `main.js`, `manifest.json` and `styles.css` into `<vault>/.obsidian/plugins/fzsshtermfile/`.
 2. Enable it in *Settings → Community plugins*.
 
 ## Native PTY (node-pty) and the Electron ABI problem — please read
 
 A terminal can run **interactive full-screen programs** (vim, htop, **Claude Code**'s UI) and give you a true shell line editor (the shell's own Backspace, tab-completion, etc.) only when it is backed by a **real PTY**. On the desktop that means the native `node-pty` module.
 
-**Why fzTermFile does not bundle node-pty:**
+**Why fzSSHTermFile does not bundle node-pty:**
 
 1. The Obsidian community store distributes only `main.js` + `manifest.json` + `styles.css` — **no binaries**.
 2. `node-pty` is a **native module** that must be compiled for the **exact Electron version** Obsidian ships. Obsidian moves fast: it has gone Electron 32 → 34 → **39** (Obsidian 1.12.x). A prebuilt binary that matches one version stops loading after an Electron bump (`NODE_MODULE_VERSION` mismatch).
-3. Downloading or `npm install`-ing native code **at runtime from inside a plugin** is a common reason for **rejection** from the community store (it resembles a self-update / remote-code mechanism), so fzTermFile **never** does that.
+3. Downloading or `npm install`-ing native code **at runtime from inside a plugin** is a common reason for **rejection** from the community store (it resembles a self-update / remote-code mechanism), so fzSSHTermFile **never** does that.
 
 **A second hurdle — the renderer can't run node-pty directly:** even with a correct binary, node-pty's Windows ConPTY backend spins up a **Worker thread** for its console socket, and the Obsidian **renderer** runs on a V8 platform that **forbids Workers** (`Failed to construct 'Worker'`). So node-pty cannot run inside the plugin's process.
 
-**How fzTermFile solves it (the "PTY host"), the same way the `terminal` plugin (by polyipseity) does:** that plugin ships JS only and bridges true PTY behavior through an **external runtime** the user installs (Python 3.9+, plus `psutil`/`pywinctl` on Windows). fzTermFile uses the same approach with **Node.js**: it spawns your installed `node` running a tiny **PTY host** — the plugin's own code, passed **in-memory via `node -e`** (nothing executable is written to disk, nothing is downloaded) — which runs `node-pty` in that separate process (where Workers work) and proxies the terminal over stdio. If Node or node-pty is missing, the terminal transparently falls back to compatibility mode.
+**How fzSSHTermFile solves it (the "PTY host"), the same way the `terminal` plugin (by polyipseity) does:** that plugin ships JS only and bridges true PTY behavior through an **external runtime** the user installs (Python 3.9+, plus `psutil`/`pywinctl` on Windows). fzSSHTermFile uses the same approach with **Node.js**: it spawns your installed `node` running a tiny **PTY host** — the plugin's own code, passed **in-memory via `node -e`** (nothing executable is written to disk, nothing is downloaded) — which runs `node-pty` in that separate process (where Workers work) and proxies the terminal over stdio. If Node or node-pty is missing, the terminal transparently falls back to compatibility mode.
 
 ### Enabling the real PTY (recommended for Claude Code)
 
 You need two things: **Node.js installed** (to host node-pty) and the **node-pty module** in the plugin folder. The simplest module is **`@lydell/node-pty`**, whose prebuilt binaries are **N-API** — ABI-stable across Electron/Node versions, so no rebuild or C++ toolchain is required.
 
 1. Install **Node.js** (LTS) from <https://nodejs.org> if you don't have it.
-2. Open *Settings → fzTermFile → Native local terminal (node-pty)* and click **Copy install command** (and **Open plugin folder**). The command is, in effect:
+2. Open *Settings → fzSSHTermFile → Native local terminal (node-pty)* and click **Copy install command** (and **Open plugin folder**). The command is, in effect:
    ```bash
-   npm install --prefix "<vault>/.obsidian/plugins/fztermfile" @lydell/node-pty
+   npm install --prefix "<vault>/.obsidian/plugins/fzsshtermfile" @lydell/node-pty
    ```
 3. Run it in a **real terminal** (PowerShell/bash). It downloads only your platform's prebuilt (e.g. `@lydell/node-pty-win32-x64`, which bundles ConPTY/OpenConsole on Windows).
 4. **Reopen Obsidian** and open a **new** terminal. You'll see the shell's own prompt with real line editing (e.g. PSReadLine syntax colors), full-screen TUIs, and Claude Code's UI. The settings status reads *Detected*.
@@ -72,7 +72,7 @@ Until you enable it, **compatibility mode** is used automatically — it already
 
 - **Ribbon** icon or command **"Open terminal (choose profile)"**.
 - **Commands** (Ctrl/Cmd+P): open terminal, new local terminal, open Claude Code, open file browser.
-- **Profiles:** *Settings → fzTermFile → Terminal profiles → + Local / + SSH* (edit, delete, favorite there).
+- **Profiles:** *Settings → fzSSHTermFile → Terminal profiles → + Local / + SSH* (edit, delete, favorite there).
   - **Shell / command line:** leave empty for auto-detection, or type a full command line such as `pwsh.exe -c wsl.exe`. Use **Extra arguments** for additional argv (e.g. `-d Ubuntu` to pick a WSL distro).
 - **SSH:** host, port, username and **password** *or* **private key** (+ passphrase) and an initial remote directory.
 - **File browser:** switch **Local/Remote**; click folders; **download**/**upload** files (the remote side uses the open SSH session). Existing files trigger an **overwrite confirmation**.

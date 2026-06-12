@@ -8,7 +8,7 @@ const prod = process.argv[2] === "production";
 const nodeBuiltins = [...builtins, ...builtins.map((m) => `node:${m}`)];
 
 /*
- * fzTermFile build configuration ("dois em um").
+ * fzSSHTermFile build configuration ("dois em um").
  *
  * BUNDLADO no main.js (entra na loja sem arquivos extras):
  *   - xterm.js + addons

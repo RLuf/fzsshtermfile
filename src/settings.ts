@@ -154,7 +154,7 @@ export class FzSettingTab extends PluginSettingTab {
 				.addButton((b) =>
 					b.setButtonText(t("settings.copyInstallCmd")).onClick(async () => {
 						await navigator.clipboard.writeText(bm.getInstallCommand());
-						new Notice("fzTermFile: " + t("settings.copied"));
+						new Notice("fzSSHTermFile: " + t("settings.copied"));
 					})
 				)
 				.addButton((b) =>
