@@ -7,7 +7,7 @@ A **hybrid terminal** for Obsidian: a **local shell** (WSL on Windows, native sh
 - **UI language:** English by default, with an optional **Português (Brasil)** translation in settings.
 - **Stack:** TypeScript, the Obsidian API, xterm.js, ssh2 (SSH/SFTP), optional node-pty (real PTY), bundled with esbuild.
 
-> **What this plugin does on your machine (disclosure).** It spawns local shell processes (e.g. `wsl.exe`, `pwsh.exe`, `/bin/bash`) and, for SSH profiles, opens outbound network connections to the host you configure and can transfer files over SFTP. It does **not** download or execute any code from the internet on its own, and it has no telemetry. SSH passwords/passphrases you enter are stored **unencrypted** in this vault's `data.json` — prefer key-file authentication.
+> **What this plugin does on your machine (disclosure).** It spawns local shell processes (e.g. `wsl.exe`, `pwsh.exe`, `/bin/bash`) and, for SSH profiles, opens outbound network connections to the host you configure and can transfer files over SFTP. For the optional high-fidelity terminal it also spawns your installed **Node.js** running a small **PTY host** — the plugin's own embedded code, passed in-memory via `node -e` (nothing executable is written to disk and nothing is downloaded) — which runs `node-pty` outside the Obsidian renderer. This is the same kind of external-runtime bridge the community **Terminal** plugin uses. It reads/writes only inside the plugin folder and your vault. It does **not** download or execute any code from the internet on its own, and it has no telemetry. SSH passwords/passphrases you enter are stored **unencrypted** in this vault's `data.json` — prefer key-file authentication.
 
 ## Features
 
@@ -48,22 +48,25 @@ A terminal can run **interactive full-screen programs** (vim, htop, **Claude Cod
 2. `node-pty` is a **native module** that must be compiled for the **exact Electron version** Obsidian ships. Obsidian moves fast: it has gone Electron 32 → 34 → **39** (Obsidian 1.12.x). A prebuilt binary that matches one version stops loading after an Electron bump (`NODE_MODULE_VERSION` mismatch).
 3. Downloading or `npm install`-ing native code **at runtime from inside a plugin** is a common reason for **rejection** from the community store (it resembles a self-update / remote-code mechanism), so fzTermFile **never** does that.
 
-**How the popular `terminal` plugin (by polyipseity) handles it — and what fzTermFile does:** that plugin also ships JS only and does **not** bundle a PTY; for true PTY/resize behavior it asks the **user** to install a helper themselves (Python 3.9+, plus `psutil`/`pywinctl` on Windows). fzTermFile follows the same philosophy: **nothing is downloaded at runtime**, and the native PTY is an **opt-in dependency you install once**.
+**A second hurdle — the renderer can't run node-pty directly:** even with a correct binary, node-pty's Windows ConPTY backend spins up a **Worker thread** for its console socket, and the Obsidian **renderer** runs on a V8 platform that **forbids Workers** (`Failed to construct 'Worker'`). So node-pty cannot run inside the plugin's process.
 
-### Working around it: enable a real PTY (recommended for Claude Code)
+**How fzTermFile solves it (the "PTY host"), the same way the `terminal` plugin (by polyipseity) does:** that plugin ships JS only and bridges true PTY behavior through an **external runtime** the user installs (Python 3.9+, plus `psutil`/`pywinctl` on Windows). fzTermFile uses the same approach with **Node.js**: it spawns your installed `node` running a tiny **PTY host** — the plugin's own code, passed **in-memory via `node -e`** (nothing executable is written to disk, nothing is downloaded) — which runs `node-pty` in that separate process (where Workers work) and proxies the terminal over stdio. If Node or node-pty is missing, the terminal transparently falls back to compatibility mode.
 
-The simplest option is **`@lydell/node-pty`**, whose prebuilt binaries are **N-API** — ABI-stable across Electron versions, so they load on Obsidian's current Electron **without any rebuild or C++ toolchain**. To enable the full TUI / Claude Code experience:
+### Enabling the real PTY (recommended for Claude Code)
 
-1. Open *Settings → fzTermFile → Native local terminal (node-pty)* and click **Copy install command** (and **Open plugin folder**). The command is, in effect:
+You need two things: **Node.js installed** (to host node-pty) and the **node-pty module** in the plugin folder. The simplest module is **`@lydell/node-pty`**, whose prebuilt binaries are **N-API** — ABI-stable across Electron/Node versions, so no rebuild or C++ toolchain is required.
+
+1. Install **Node.js** (LTS) from <https://nodejs.org> if you don't have it.
+2. Open *Settings → fzTermFile → Native local terminal (node-pty)* and click **Copy install command** (and **Open plugin folder**). The command is, in effect:
    ```bash
    npm install --prefix "<vault>/.obsidian/plugins/fztermfile" @lydell/node-pty
    ```
-2. Run it in a **real terminal** (PowerShell/bash) on the machine. It downloads only your platform's prebuilt (e.g. `@lydell/node-pty-win32-x64`, which bundles ConPTY/OpenConsole on Windows).
-3. **Reopen Obsidian.** fzTermFile auto-detects the module and switches local terminals to the real PTY (the settings status will say *Detected*).
+3. Run it in a **real terminal** (PowerShell/bash). It downloads only your platform's prebuilt (e.g. `@lydell/node-pty-win32-x64`, which bundles ConPTY/OpenConsole on Windows).
+4. **Reopen Obsidian** and open a **new** terminal. You'll see the shell's own prompt with real line editing (e.g. PSReadLine syntax colors), full-screen TUIs, and Claude Code's UI. The settings status reads *Detected*.
 
-If `@lydell/node-pty` ever lacks a prebuild for your platform/arch, alternatives are `node-pty` (official, needs `npx @electron/rebuild -v <obsidian-electron-version>` and a C++ toolchain) or `@homebridge/node-pty-prebuilt-multiarch`. Read Obsidian's Electron version from *Help → About*.
+If Node isn't on the renderer's `PATH`, set the env var `FZ_TERMFILE_NODE` to your `node` path (or rely on the standard install location, which the plugin checks automatically). Alternatives to `@lydell/node-pty`: `node-pty` (official, needs `npx @electron/rebuild` + a C++ toolchain) or `@homebridge/node-pty-prebuilt-multiarch`.
 
-Until then, **compatibility mode** is used automatically — and it already fixes the classic "Backspace doesn't work in pwsh.exe" problem by doing the line editing on the front end. Its only limitation is full-screen TUIs.
+Until you enable it, **compatibility mode** is used automatically — it already fixes the classic "Backspace doesn't work in pwsh.exe" problem by doing line editing on the front end. Its only limitation is full-screen TUIs.
 
 ## Usage
 

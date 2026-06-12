@@ -261,9 +261,14 @@ export class TerminalView extends ItemView {
 				await native.start(size);
 				this.fit();
 				return;
-			} catch {
+			} catch (e) {
 				native.dispose();
 				this.backend = null;
+				// Surface the real reason so PTY/renderer issues are diagnosable,
+				// then transparently fall back to compatibility mode below.
+				const detail = e instanceof Error ? e.message : String(e);
+				console.error("fzTermFile: native PTY failed, using fallback:", e);
+				this.term?.writeln("\r\n\x1b[90m[node-pty: " + detail + "]\x1b[0m");
 				new Notice("fzTermFile: " + t("view.nativeFailed"));
 			}
 		}

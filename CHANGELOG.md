@@ -52,17 +52,20 @@ All notable changes to fzTermFile are documented here. This project follows
   compatibility fallback. See *Native PTY* in the README for how to enable a real
   PTY manually.
 
-### Note on the native PTY (please read)
-A real PTY (needed for full-screen TUIs and **Claude Code**'s interactive UI) is a
-native module that must match Obsidian's exact Electron version. Obsidian has
-moved Electron 32 → 34 → **39** (1.12.x), so a bundled prebuilt would break on
-every Electron bump, and the store ships JS only (no binaries). Like the popular
-`terminal` plugin (which asks the user to install a Python helper rather than
-bundling one), fzTermFile keeps the native PTY as an **opt-in, user-installed**
-dependency and never downloads code at runtime. The compatibility fallback covers
-ordinary command-line use, including the Backspace fix. Recommended package:
-**`@lydell/node-pty`** (N-API prebuilds — loads on current Electron with no
-rebuild); the runtime loader also accepts `node-pty`,
+### Added — real PTY via an external "PTY host"
+Full-screen TUIs and **Claude Code**'s interactive UI need a real PTY. Two
+obstacles: (1) node-pty is native and must match Obsidian's Electron (32 → 34 →
+**39**), and the store ships JS only; (2) even with a correct binary, node-pty's
+ConPTY backend needs a **Worker thread**, which the Obsidian **renderer forbids**
+(`Failed to construct 'Worker'`). fzTermFile solves this with a **PTY host**: it
+spawns the user's **Node.js** running the plugin's own host code (passed
+in-memory via `node -e` — nothing written to disk, nothing downloaded), which
+runs node-pty in that separate process and proxies the terminal over stdio. This
+is the same external-runtime bridge the community **Terminal** plugin uses (it
+bridges through Python). Requirements: **Node.js installed** + a node-pty module
+in the plugin folder (recommended: **`@lydell/node-pty`**, N-API prebuilds — no
+rebuild). If either is missing, the terminal falls back to compatibility mode
+(which still has the Backspace fix). The runtime loader also accepts `node-pty`,
 `@homebridge/node-pty-prebuilt-multiarch`, and `node-pty-prebuilt-multiarch`.
 
 ## [1.0.0] - 2026
